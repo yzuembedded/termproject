@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Ubike in 桃園</string>
+    <string name="activity_main_button1text">租賃地圖</string>
+    <string name="activity_main_button2text">租賃站列表</string>
+    <string name="activity_main_button3text">體能計算</string>
+    <string name="activity_main_button4text">使用說明</string>
+</resources>

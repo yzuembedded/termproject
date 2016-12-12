@@ -1,5 +1,6 @@
 package linyeh.termproject;
 
+import android.content.Intent;
 import android.support.v7.app.*;
 
 import android.os.Bundle;
@@ -36,7 +37,14 @@ public class MainActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
                 Toast.makeText(MainActivity.this, "You Clicked at " +list[+ position], Toast.LENGTH_SHORT).show();
-
+                switch(position){
+                    case 0:
+                        Intent action = new Intent();
+                        action.setClass(MainActivity.this, MapsActivity.class);
+                        startActivity(action);
+                        finish();
+                        break;
+                }
             }
         });
 

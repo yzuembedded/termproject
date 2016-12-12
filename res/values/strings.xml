@@ -4,4 +4,5 @@
     <string name="activity_main_button2text">租賃站列表</string>
     <string name="activity_main_button3text">體能計算</string>
     <string name="activity_main_button4text">使用說明</string>
+    <string name="title_activity_maps">Map</string>
 </resources>

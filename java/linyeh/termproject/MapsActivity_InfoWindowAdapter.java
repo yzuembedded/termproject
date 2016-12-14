@@ -7,10 +7,6 @@ import android.widget.TextView;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.Marker;
 
-/**
- * Created by Eric on 2016/12/13.
- */
-
 public class MapsActivity_InfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
     private Activity context;
     public MapsActivity_InfoWindowAdapter(Activity in_context){

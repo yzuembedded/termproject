@@ -28,7 +28,7 @@ public class uBikeStationInfo {
         sb.append("\n可借數量：");
         sb.append(usableNum);
         sb.append("\n可還數量：");
-        sb.append(usableNum);
+        sb.append(returanableNum);
         return sb.toString();
     }
 }

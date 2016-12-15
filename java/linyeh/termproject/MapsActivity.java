@@ -26,7 +26,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public GoogleMap mMap;
     private OpendataHandler opendata;
     private LocationManager locationManager;
-    //private LocationListener locationListener;
+    private LocationListener locationListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,14 +53,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onResume(){
         super.onResume();
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        /*locationListener = new LocationListener() {
+        locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
+                if(location != null)
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 15));
                 Log.d("onLocationChanged", Double.toString(location.getLatitude())+" "+Double.toString(location.getLongitude()));
                 if (ActivityCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                         && ActivityCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) { return; }
                 else {
-                    Log.d("onLocationChanged", "listenerRemove");
+                    Log.d("onLocationChanged", "listenerRemove1");
                     locationManager.removeUpdates(locationListener);
                 }
             }
@@ -79,7 +81,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onProviderDisabled(String s) {
 
             }
-        };*/
+        };
     }
 
     @Override
@@ -90,9 +92,30 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         String opendataurl = "http://data.gov.tw/iisi/logaccess/66022?dataUrl=http://data.tycg.gov.tw/opendata/datalist/datasetMeta/download?id=5ca2bfc7-9ace-4719-88ae-4034b9a5a55c&rid=a1b4714b-3b75-4ff8-a8f2-cc377e4eaa0f&ndctype=JSON&ndcnid=28228";
         opendata = new OpendataHandler(opendataurl, net);
 
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+        Location initLocation = null;
+        initLocation = getCurrentLocation();
+        if(initLocation != null) {
+            if (ActivityCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                    && ActivityCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) { return; }
+            else {
+                Log.d("onLocationChanged", "listenerRemove2");
+                locationManager.removeUpdates(locationListener);
+            }
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(initLocation.getLatitude(), initLocation.getLongitude()), 15));
+        }
+        /*Thread waitInitLocationThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Location initLocation = null;
+                while((initLocation = getCurrentLocation()) == null) Log.d("gps", "searching...");
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(initLocation.getLatitude(), initLocation.getLongitude()), 15));
+            }
+        });
+        waitInitLocationThread.start();*/
+
+        /*if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) { return; }
-        /*else {
+        else {
             Location initLocation = null;
             while((initLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)) == null);
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(initLocation.getLatitude(), initLocation.getLongitude()), 15));
@@ -120,11 +143,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             return null;
         }
         if (isGPSEnabled) {
-            //locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 5000, locationListener);
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 5000, locationListener);
             location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         }
         else if(isNetworkEnabled){
-            //locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5000, 5000, locationListener);
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5000, 5000, locationListener);
             location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
         }
         return location;
@@ -133,12 +156,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Handler net = new Handler(){
         @Override
         public void handleMessage(Message msg){
-            if(msg.what == 200){
-                for(int i=0; i<opendata.stations.size(); ++i){
-                    drawMarker(opendata.stations.get(i));
-                }
-                //drawMarker( getCurrentLocation() );
-                Log.v("ubike",opendata.data);
+            switch(msg.what) {
+                case 200:
+                    for (int i = 0; i < opendata.stations.size(); ++i)
+                        drawMarker(opendata.stations.get(i));
+                    break;
             }
         }
     };

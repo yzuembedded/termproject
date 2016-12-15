@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.support.v7.app.*;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.*;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -24,9 +25,10 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d("timeeeeeeeeeeeeeeee","0");
         super.onCreate(savedInstanceState);
+        Log.d("timeeeeeeeeeeeeeeee","1");
         setContentView(R.layout.activity_main);
-
         CustomList adapter = new
                 CustomList(MainActivity.this, list, imageId);
         listView=(ListView)findViewById(R.id.listView);
@@ -47,7 +49,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-
     }
 
 }

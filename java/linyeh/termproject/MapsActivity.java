@@ -40,13 +40,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     protected void onPause() {
         super.onPause();
-        /*if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) { return; }
         else {
             locationManager.removeUpdates(locationListener);
-        }*/
+        }
         locationManager = null;
-        //locationListener = null;
+        locationListener = null;
     }
 
     @Override
@@ -85,7 +85,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     @Override
-    public void onMapReady(GoogleMap googleMap) {
+    public void onMapReady(GoogleMap googleMap) { // YZU      24.9699      121.266
         mMap = googleMap;
         mMap.setInfoWindowAdapter(new MapsActivity_InfoWindowAdapter(MapsActivity.this));
 
@@ -99,27 +99,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     && ActivityCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) { return; }
             else {
                 Log.d("onLocationChanged", "listenerRemove2");
-                locationManager.removeUpdates(locationListener);
+                //locationManager.removeUpdates(locationListener);
             }
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(initLocation.getLatitude(), initLocation.getLongitude()), 15));
         }
-        /*Thread waitInitLocationThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Location initLocation = null;
-                while((initLocation = getCurrentLocation()) == null) Log.d("gps", "searching...");
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(initLocation.getLatitude(), initLocation.getLongitude()), 15));
-            }
-        });
-        waitInitLocationThread.start();*/
-
-        /*if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) { return; }
-        else {
-            Location initLocation = null;
-            while((initLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)) == null);
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(initLocation.getLatitude(), initLocation.getLongitude()), 15));
-        }*/
     }
 
     private void drawMarker(uBikeStationInfo info){
@@ -143,11 +126,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             return null;
         }
         if (isGPSEnabled) {
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 5000, locationListener);
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 5000, locationListener);
             location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         }
         else if(isNetworkEnabled){
-            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5000, 5000, locationListener);
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 5000, locationListener);
             location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
         }
         return location;
@@ -159,7 +142,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             switch(msg.what) {
                 case 200:
                     for (int i = 0; i < opendata.stations.size(); ++i)
-                        drawMarker(opendata.stations.get(i));
+                        if(opendata.stations.get(i).isActive)
+                            drawMarker(opendata.stations.get(i));
                     break;
             }
         }

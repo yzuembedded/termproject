@@ -41,18 +41,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        mMap.setInfoWindowAdapter(new MapsActivity_InfoWindowAdapter(MapsActivity.this));
 
-        // Add a marker in Sydney and move the camera
+
+
+
+        String opendataurl = "http://data.gov.tw/iisi/logaccess/66022?dataUrl=http://data.tycg.gov.tw/opendata/datalist/datasetMeta/download?id=5ca2bfc7-9ace-4719-88ae-4034b9a5a55c&rid=a1b4714b-3b75-4ff8-a8f2-cc377e4eaa0f&ndctype=JSON&ndcnid=28228";
+        opendata = new OpendataHandler(opendataurl, net);
+    }
+
+    private void drawMarker(Location location){
         LatLng yzu = new LatLng(24.969919, 121.266497);
         BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_place_black_24dp);
         mMap.addMarker(new MarkerOptions().position(yzu).title("YZU").snippet("CSE\nlove\nIC").icon(icon));
         //mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(yzu));
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(yzu, 15));
-        mMap.setInfoWindowAdapter(new MapsActivity_InfoWindowAdapter(MapsActivity.this));
-
-        String opendataurl = "http://data.gov.tw/iisi/logaccess/66022?dataUrl=http://data.tycg.gov.tw/opendata/datalist/datasetMeta/download?id=5ca2bfc7-9ace-4719-88ae-4034b9a5a55c&rid=a1b4714b-3b75-4ff8-a8f2-cc377e4eaa0f&ndctype=JSON&ndcnid=28228";
-        opendata = new OpendataHandler(opendataurl, net);
     }
 
     private LocationListener locationListener = new LocationListener() {
@@ -77,13 +81,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     };
 
-    private void getCurrentLocation() {
-        boolean isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER),
+    private Location getCurrentLocation() {
+        return null;
+        /*boolean isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER),
                 isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+
         Location location = null;
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
+            return null;
         }
         if (isGPSEnabled) {
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 5000, locationListener);
@@ -96,14 +102,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         else{
 
         }
-
+        return location;*/
     }
 
     private Handler net = new Handler(){
         @Override
         public void handleMessage(Message msg){
             if(msg.what == 200){
-
+                drawMarker( getCurrentLocation() );
+                Log.v("ubike",opendata.data);
             }
         }
     };

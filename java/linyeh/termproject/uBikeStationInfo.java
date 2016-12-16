@@ -8,6 +8,8 @@ import android.location.LocationManager;
  */
 
 public class uBikeStationInfo {
+
+    public String id;
     public String stationName;
     public int totalNum;
     public int usableNum;

@@ -23,8 +23,8 @@ public class OpendataHandler {
         this.url = in_url;
         this.handler = in_handler;
         stations = new ArrayList<uBikeStationInfo>();
-        Thread networkThread = new Thread(dataRunnable);
-        networkThread.start();
+        Thread dataThread = new Thread(dataRunnable);
+        dataThread.start();
     }
 
     private void dataInterpret(){
@@ -60,6 +60,8 @@ public class OpendataHandler {
                         tmp.stationLatlng.setLongitude(Double.parseDouble(reader.nextString()));
                     else if(name.equals("act"))
                         tmp.isActive = reader.nextString().equals("1");
+                    else if(name.equals("sno"))
+                        tmp.id = reader.nextString();
                     else
                         reader.skipValue();
                 }

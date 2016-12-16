@@ -27,6 +27,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private OpendataHandler opendata;
     private LocationManager locationManager;
     private LocationListener locationListener;
+    private Handler markerUpdater = new Handler();
+    private final String opendataurl = "http://data.gov.tw/iisi/logaccess/66022?dataUrl=http://data.tycg.gov.tw/opendata/datalist/datasetMeta/download?id=5ca2bfc7-9ace-4719-88ae-4034b9a5a55c&rid=a1b4714b-3b75-4ff8-a8f2-cc377e4eaa0f&ndctype=JSON&ndcnid=28228";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +42,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     protected void onPause() {
         super.onPause();
+        markerUpdater.removeCallbacks(markerUpdaterRunnable);
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) { return; }
         else {
@@ -89,7 +92,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap = googleMap;
         mMap.setInfoWindowAdapter(new MapsActivity_InfoWindowAdapter(MapsActivity.this));
 
-        String opendataurl = "http://data.gov.tw/iisi/logaccess/66022?dataUrl=http://data.tycg.gov.tw/opendata/datalist/datasetMeta/download?id=5ca2bfc7-9ace-4719-88ae-4034b9a5a55c&rid=a1b4714b-3b75-4ff8-a8f2-cc377e4eaa0f&ndctype=JSON&ndcnid=28228";
         opendata = new OpendataHandler(opendataurl, net);
 
         Location initLocation = null;
@@ -104,6 +106,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(initLocation.getLatitude(), initLocation.getLongitude()), 15));
         }
     }
+
+    private Runnable markerUpdaterRunnable = new Runnable() {
+        @Override
+        public void run() {
+            opendata = new OpendataHandler(opendataurl, net);
+        }
+    };
 
     private void drawMarker(uBikeStationInfo info){
         if(info.stationLatlng != null) {
@@ -141,9 +150,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         public void handleMessage(Message msg){
             switch(msg.what) {
                 case 200:
+                    mMap.clear();
                     for (int i = 0; i < opendata.stations.size(); ++i)
                         if(opendata.stations.get(i).isActive)
                             drawMarker(opendata.stations.get(i));
+                    markerUpdater.postDelayed(markerUpdaterRunnable, 5000);
                     break;
             }
         }

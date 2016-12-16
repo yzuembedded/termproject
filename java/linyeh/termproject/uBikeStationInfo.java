@@ -25,9 +25,9 @@ public class uBikeStationInfo {
 
     public String getContent(){
         StringBuffer sb = new StringBuffer();
-        sb.append("總數量：");
-        sb.append(totalNum);
-        sb.append("\n可借數量：");
+        /*sb.append("總數量：");
+        sb.append(totalNum);*/
+        sb.append("可借數量：");
         sb.append(usableNum);
         sb.append("\n可還數量：");
         sb.append(returanableNum);

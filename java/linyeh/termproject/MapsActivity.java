@@ -19,6 +19,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
@@ -87,11 +88,27 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         };
     }
 
+    private Marker marker_isClicking = null;
+    private GoogleMap.OnMarkerClickListener markerClickListener = new GoogleMap.OnMarkerClickListener() {
+        @Override
+        public boolean onMarkerClick(Marker marker) {
+            marker_isClicking = marker;
+            return false;
+        }
+    };
+    private GoogleMap.OnMapClickListener onMapClickListener = new GoogleMap.OnMapClickListener() {
+        @Override
+        public void onMapClick(LatLng latLng) {
+            marker_isClicking = null;
+        }
+    };
+
     @Override
     public void onMapReady(GoogleMap googleMap) { // YZU      24.9699      121.266
         mMap = googleMap;
         mMap.setInfoWindowAdapter(new MapsActivity_InfoWindowAdapter(MapsActivity.this));
-
+        mMap.setOnMarkerClickListener(markerClickListener);
+        mMap.setOnMapClickListener(onMapClickListener);
         opendata = new OpendataHandler(opendataurl, net);
 
         Location initLocation = null;
@@ -114,11 +131,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     };
 
-    private void drawMarker(uBikeStationInfo info){
+    private void drawMarker(uBikeStationInfo info, boolean needShowInfo){
         if(info.stationLatlng != null) {
             LatLng yzu = new LatLng(info.stationLatlng.getLatitude(), info.stationLatlng.getLongitude());
             BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_place_black_24dp);
-            mMap.addMarker(new MarkerOptions().position(yzu).title(info.stationName).snippet(info.getContent()).icon(icon));
+            Marker m = mMap.addMarker(new MarkerOptions().position(yzu).title(info.stationName).snippet(info.getContent()).icon(icon));
+            if(needShowInfo) {
+                marker_isClicking = m;
+                m.showInfoWindow();
+            }
             //mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
             //mMap.moveCamera(CameraUpdateFactory.newLatLng(yzu));
             //mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(yzu, 15));
@@ -150,10 +171,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         public void handleMessage(Message msg){
             switch(msg.what) {
                 case 200:
+                    String title_isClicking = null;
+                    if(marker_isClicking != null)
+                        title_isClicking = marker_isClicking.getTitle();
                     mMap.clear();
-                    for (int i = 0; i < opendata.stations.size(); ++i)
-                        if(opendata.stations.get(i).isActive)
-                            drawMarker(opendata.stations.get(i));
+                    for (int i = 0; i < opendata.stations.size(); ++i) {
+                        if (opendata.stations.get(i).isActive) {
+                            drawMarker(opendata.stations.get(i), marker_isClicking != null && opendata.stations.get(i).stationName.equals(title_isClicking));
+                        }
+                    }
                     markerUpdater.postDelayed(markerUpdaterRunnable, 5000);
                     break;
             }

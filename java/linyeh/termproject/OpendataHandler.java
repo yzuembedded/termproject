@@ -14,13 +14,12 @@ import java.net.URL;
 import java.util.ArrayList;
 
 public class OpendataHandler {
-    private String url;
+    private String url = "http://data.gov.tw/iisi/logaccess/66022?dataUrl=http://data.tycg.gov.tw/opendata/datalist/datasetMeta/download?id=5ca2bfc7-9ace-4719-88ae-4034b9a5a55c&rid=a1b4714b-3b75-4ff8-a8f2-cc377e4eaa0f&ndctype=JSON&ndcnid=28228";
     private Handler handler;
     public String data;
     public ArrayList<uBikeStationInfo> stations;
 
-    public OpendataHandler(String in_url, Handler in_handler){
-        this.url = in_url;
+    public OpendataHandler(Handler in_handler){
         this.handler = in_handler;
         stations = new ArrayList<uBikeStationInfo>();
         Thread dataThread = new Thread(dataRunnable);

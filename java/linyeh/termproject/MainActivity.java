@@ -24,7 +24,6 @@ public class MainActivity extends AppCompatActivity {
     private ListView listView;
     private WeatherdataHandler weatherH;
     private String[] list = {"  租賃站地圖","  租賃站列表","  路線規劃","  使用說明"};
-    private ArrayAdapter<String> listAdapter;
     Integer[] imageId = {
             R.drawable.ic_place_black_24dp,
             R.drawable.ic_directions_bike_black_24dp,
@@ -34,16 +33,13 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.d("timeeeeeeeeeeeeeeee","0");
         super.onCreate(savedInstanceState);
-        Log.d("timeeeeeeeeeeeeeeee","1");
         setContentView(R.layout.activity_main);
         WX=(TextView)findViewById(R.id.WXtext);
         IC=(TextView)findViewById(R.id.ICtext);
         T=(TextView)findViewById(R.id.Ttext);
         weatherH=new WeatherdataHandler(net);
-        CustomList adapter = new
-                CustomList(MainActivity.this, list, imageId);
+        CustomList adapter = new CustomList(MainActivity.this, list, imageId);
         listView=(ListView)findViewById(R.id.listView);
         listView.setAdapter(adapter);
 
@@ -53,12 +49,15 @@ public class MainActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
                 Toast.makeText(MainActivity.this, "You Clicked at " +list[+ position], Toast.LENGTH_SHORT).show();
+                Intent action = new Intent();
                 switch(position){
                     case 0:
-                        Intent action = new Intent();
                         action.setClass(MainActivity.this, MapsActivity.class);
                         startActivity(action);
-                        finish();
+                        break;
+                    case 1:
+                        action.setClass(MainActivity.this, StationListActivity.class);
+                        startActivity(action);
                         break;
                 }
             }

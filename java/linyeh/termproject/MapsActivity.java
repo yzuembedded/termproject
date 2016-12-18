@@ -29,7 +29,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private LocationManager locationManager;
     private LocationListener locationListener;
     private Handler markerUpdater = new Handler();
-    private final String opendataurl = "http://data.gov.tw/iisi/logaccess/66022?dataUrl=http://data.tycg.gov.tw/opendata/datalist/datasetMeta/download?id=5ca2bfc7-9ace-4719-88ae-4034b9a5a55c&rid=a1b4714b-3b75-4ff8-a8f2-cc377e4eaa0f&ndctype=JSON&ndcnid=28228";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,7 +108,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.setInfoWindowAdapter(new MapsActivity_InfoWindowAdapter(MapsActivity.this));
         mMap.setOnMarkerClickListener(markerClickListener);
         mMap.setOnMapClickListener(onMapClickListener);
-        opendata = new OpendataHandler(opendataurl, net);
+        opendata = new OpendataHandler(net);
 
         Location initLocation = null;
         initLocation = getCurrentLocation();
@@ -127,7 +126,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Runnable markerUpdaterRunnable = new Runnable() {
         @Override
         public void run() {
-            opendata = new OpendataHandler(opendataurl, net);
+            opendata = new OpendataHandler(net);
         }
     };
 

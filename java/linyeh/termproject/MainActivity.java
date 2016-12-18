@@ -23,11 +23,11 @@ public class MainActivity extends AppCompatActivity {
 
     private ListView listView;
     private WeatherdataHandler weatherH;
-    private String[] list = {"  租賃站地圖","  租賃站列表","  路線規劃","  使用說明"};
+    private String[] list = {"  租賃站地圖","  租賃站列表","  使用說明"};
     Integer[] imageId = {
             R.drawable.ic_place_black_24dp,
             R.drawable.ic_directions_bike_black_24dp,
-            R.drawable.ic_navigation_black_24dp,
+
             R.drawable.ic_event_note_black_24dp,
     };
 

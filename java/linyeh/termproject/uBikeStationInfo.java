@@ -18,8 +18,10 @@ public class uBikeStationInfo {
     public String address;
     public boolean isActive;
     public String updateTime;
+    public float distance;
 
     public uBikeStationInfo(){
+        distance = Float.MAX_VALUE;
         stationLatlng = new Location(LocationManager.PASSIVE_PROVIDER);
     }
 

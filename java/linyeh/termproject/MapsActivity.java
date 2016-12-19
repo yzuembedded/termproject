@@ -60,14 +60,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
-                if(location != null)
+                if(location != null) {
                     mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 15));
-                Log.d("onLocationChanged", Double.toString(location.getLatitude())+" "+Double.toString(location.getLongitude()));
-                if (ActivityCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                        && ActivityCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) { return; }
-                else {
-                    Log.d("onLocationChanged", "listenerRemove1");
-                    locationManager.removeUpdates(locationListener);
+                    Log.d("onLocationChanged", Double.toString(location.getLatitude()) + " " + Double.toString(location.getLongitude()));
+                    if (ActivityCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                            && ActivityCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        return;
+                    } else {
+                        Log.d("onLocationChanged", "listenerRemove1");
+                        locationManager.removeUpdates(locationListener);
+                    }
                 }
             }
 
@@ -106,7 +108,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) { // YZU      24.9699      121.266
         mMap = googleMap;
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(23.973875, 120.982024)));
+        //mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(23.973875, 120.982024)));
         mMap.setInfoWindowAdapter(new MapsActivity_InfoWindowAdapter(MapsActivity.this));
         mMap.setOnMarkerClickListener(markerClickListener);
         mMap.setOnMapClickListener(onMapClickListener);

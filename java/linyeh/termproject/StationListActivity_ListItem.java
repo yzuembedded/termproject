@@ -9,6 +9,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.android.gms.vision.text.Text;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,9 +31,11 @@ public class StationListActivity_ListItem extends ArrayAdapter<uBikeStationInfo>
         View rowView= inflater.inflate(R.layout.activity_station_list_item, null, true);
         TextView txtTitle = (TextView) rowView.findViewById(R.id.title);
         TextView txtContent = (TextView) rowView.findViewById(R.id.content);
+        TextView txtDistance = (TextView) rowView.findViewById(R.id.distance);
         ImageView imageView = (ImageView) rowView.findViewById(R.id.img);
         txtTitle.setText(stationList.get(position).stationName);
-        txtContent.setText("可借數量：" + stationList.get(position).usableNum + "    可還數量" + stationList.get(position).returanableNum);
+        txtDistance.setText("距離此處：" + Integer.toString(Math.round(stationList.get(position).distance)) + "公尺");
+        txtContent.setText("可借數量：" + stationList.get(position).usableNum + "    可還數量：" + stationList.get(position).returanableNum);
         imageView.setImageResource(R.drawable.ic_place_black_24dp);
         return rowView;
     }

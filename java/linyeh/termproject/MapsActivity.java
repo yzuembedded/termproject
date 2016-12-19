@@ -1,6 +1,7 @@
 package linyeh.termproject;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
@@ -34,7 +35,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
     }
@@ -105,20 +106,32 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) { // YZU      24.9699      121.266
         mMap = googleMap;
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(23.973875, 120.982024)));
         mMap.setInfoWindowAdapter(new MapsActivity_InfoWindowAdapter(MapsActivity.this));
         mMap.setOnMarkerClickListener(markerClickListener);
         mMap.setOnMapClickListener(onMapClickListener);
         opendata = new OpendataHandler(net);
 
         Location initLocation = null;
-        initLocation = getCurrentLocation();
-        if(initLocation != null) {
+
+        Intent in_intent = getIntent();
+        Bundle bundle = in_intent.getExtras();
+        if(bundle != null && bundle.containsKey("Lat") && bundle.containsKey("Lng")){
+            initLocation = new Location(LocationManager.PASSIVE_PROVIDER);
+            initLocation.setLatitude(bundle.getDouble("Lat"));
+            initLocation.setLongitude(bundle.getDouble("Lng"));
+        }
+        else {
+            initLocation = getCurrentLocation();
             if (ActivityCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                    && ActivityCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) { return; }
-            else {
+                    && ActivityCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                return;
+            } else {
                 Log.d("onLocationChanged", "listenerRemove2");
                 //locationManager.removeUpdates(locationListener);
             }
+        }
+        if (initLocation != null) {
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(initLocation.getLatitude(), initLocation.getLongitude()), 15));
         }
     }

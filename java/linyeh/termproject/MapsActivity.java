@@ -120,6 +120,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             initLocation = new Location(LocationManager.PASSIVE_PROVIDER);
             initLocation.setLatitude(bundle.getDouble("Lat"));
             initLocation.setLongitude(bundle.getDouble("Lng"));
+            marker_isClicking = mMap.addMarker(new MarkerOptions().title(bundle.getString("stationName")).position(new LatLng(bundle.getDouble("Lat"), bundle.getDouble("Lng"))));
         }
         else {
             initLocation = getCurrentLocation();
@@ -145,9 +146,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void drawMarker(uBikeStationInfo info, boolean needShowInfo){
         if(info.stationLatlng != null) {
-            LatLng yzu = new LatLng(info.stationLatlng.getLatitude(), info.stationLatlng.getLongitude());
+            LatLng latLng = new LatLng(info.stationLatlng.getLatitude(), info.stationLatlng.getLongitude());
             BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_place_black_24dp);
-            Marker m = mMap.addMarker(new MarkerOptions().position(yzu).title(info.stationName).snippet(info.getContent()).icon(icon));
+            Marker m = mMap.addMarker(new MarkerOptions().position(latLng).title(info.stationName).snippet(info.getContent()).icon(icon));
             if(needShowInfo) {
                 marker_isClicking = m;
                 m.showInfoWindow();

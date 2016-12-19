@@ -33,6 +33,7 @@ public class StationListActivity extends AppCompatActivity {
                 Bundle bundle = new Bundle();
                 bundle.putDouble("Lat", opendata.stations.get(id[position]).stationLatlng.getLatitude());
                 bundle.putDouble("Lng", opendata.stations.get(id[position]).stationLatlng.getLongitude());
+                bundle.putString("stationName", opendata.stations.get(id[position]).stationName);
                 action.putExtras(bundle);
                 startActivity(action);
             }

@@ -4,6 +4,7 @@ package linyeh.termproject;
  * Created by YuehJuLin on 2016/12/20.
  */
 import android.icu.text.SimpleDateFormat;
+import android.location.Location;
 import android.os.Handler;
 import android.os.Message;
 
@@ -22,6 +23,7 @@ import java.util.Date;
 import java.text.ParseException;
 public class LocalWeatherHandler {
     public String data;
+    public int scope;
     private Handler handler;
     public ArrayList<LocalWeatherInfo2> LocalWeather;
     public LocalWeatherHandler(Handler in_handler)
@@ -31,6 +33,31 @@ public class LocalWeatherHandler {
         Thread dataThread = new Thread(dataRunnable);
         dataThread.start();
 
+    }
+
+    public void Determinetime()  {
+        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date dt1,dt2,Nowtime,dt4,dt5;
+        try {
+            Nowtime = new Date();
+            for(int i=0;i<LocalWeather.get(0).LocalWeatherData.size();i++)
+            {
+                dt1 = sdf.parse(LocalWeather.get(0).LocalWeatherData.get(i).startTime);
+                dt2 = sdf.parse(LocalWeather.get(0).LocalWeatherData.get(i).endTime);
+                  Log.d("dt1",Long.toString(dt1.getTime()));
+                  Log.d("dt2",Long.toString(dt2.getTime()));
+                if (dt1.getTime() < Nowtime.getTime() ) {
+                    scope = i;
+                    break;
+                }
+            }
+
+            // Log.d("dt4",Long.toString(dt4.getTime()));
+            // Log.d("dt5",Long.toString(dt5.getTime()));
+
+        }catch(Exception e){
+            e.printStackTrace();
+        }
     }
     public void dataInterpret()
     {
@@ -92,9 +119,11 @@ public class LocalWeatherHandler {
                 reader.nextName();
                 reader.skipValue();
                 reader.nextName();
-                temp2.lat=reader.nextString();
+                String lat=reader.nextString();
+                temp2.stationLatlng.setLatitude(Double.parseDouble(lat));
                 reader.nextName();
-                temp2.lon=reader.nextString();
+                String lng=reader.nextString();
+                temp2.stationLatlng.setLongitude(Double.parseDouble(lng));
                 reader.nextName();
                 reader.beginArray();
                 reader.beginObject();
@@ -149,7 +178,7 @@ public class LocalWeatherHandler {
         public void run() {
             getDataFromUrl();
             dataInterpret();
-            //Determinetime();
+            Determinetime();
             Message msg = new Message();
             msg.what = 200;
 
@@ -194,7 +223,66 @@ public class LocalWeatherHandler {
         data = sb.toString();
 
     };
+    public int determineTown(Location stationLatlng)
+    {
+        int n=0;
+        double All;
+        double Mlat;
+        double Mlng;
+        if(stationLatlng.getLatitude()>LocalWeather.get(0).stationLatlng.getLatitude())
+        {
+            Mlat =stationLatlng.getLatitude()-LocalWeather.get(0).stationLatlng.getLatitude();
+        }
+        else
+        {
+           Mlat=LocalWeather.get(0).stationLatlng.getLatitude()-stationLatlng.getLatitude();
+        }
 
+
+        if(stationLatlng.getLongitude()>LocalWeather.get(0).stationLatlng.getLongitude())
+        {
+            Mlng=stationLatlng.getLongitude()-LocalWeather.get(0).stationLatlng.getLongitude();
+
+        }
+        else
+        {
+            Mlng=LocalWeather.get(0).stationLatlng.getLongitude()-stationLatlng.getLongitude();
+        }
+        All=Mlat+Mlng;
+        for(int i=1;i<13;i++)
+        {
+            double latTemp;
+            double lngTemp;
+            if(stationLatlng.getLatitude()>LocalWeather.get(i).stationLatlng.getLatitude())
+            {
+                latTemp =stationLatlng.getLatitude()-LocalWeather.get(i).stationLatlng.getLatitude();
+            }
+            else
+            {
+                latTemp=LocalWeather.get(i).stationLatlng.getLatitude()-stationLatlng.getLatitude();
+            }
+
+            if(stationLatlng.getLongitude()>LocalWeather.get(i).stationLatlng.getLongitude())
+            {
+                lngTemp=stationLatlng.getLongitude()-LocalWeather.get(i).stationLatlng.getLongitude();
+
+            }
+            else
+            {
+                lngTemp=LocalWeather.get(i).stationLatlng.getLongitude()-stationLatlng.getLongitude();
+            }
+
+            if(All>latTemp+lngTemp)
+            {
+                n=i;
+                All=latTemp+lngTemp;
+            }
+
+        }
+
+      return n;
+
+    }
 
 
 

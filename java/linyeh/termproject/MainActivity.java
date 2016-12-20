@@ -20,7 +20,6 @@ public class MainActivity extends AppCompatActivity {
     private TextView WX;
     private TextView IC;
     private TextView T;
-    private LocalWeatherHandler localweather;
     private ListView listView;
 
     private WeatherdataHandler weatherH;
@@ -40,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
         IC=(TextView)findViewById(R.id.ICtext);
         T=(TextView)findViewById(R.id.Ttext);
         weatherH=new WeatherdataHandler(net);
-        localweather=new LocalWeatherHandler(localnet);
+
 
         CustomList adapter = new CustomList(MainActivity.this, list, imageId);
         listView=(ListView)findViewById(R.id.listView);
@@ -123,16 +122,5 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     };
-    private Handler localnet = new Handler(){
 
-        @Override
-        public void handleMessage(Message msg){
-            switch(msg.what) {
-                case 200:
-                    Log.d("1",localweather.LocalWeather.get(0).LocalWeatherData.get(0).elementValue);
-                    Log.d("1",localweather.LocalWeather.get(1).LocalWeatherData.get(0).elementValue);
-                    break;
-            }
-        }
-    };
 }

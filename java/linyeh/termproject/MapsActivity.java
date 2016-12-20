@@ -26,19 +26,20 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
-
+    private LocalWeatherHandler localweather;
     public GoogleMap mMap;
     private OpendataHandler opendata;
     private LocationManager locationManager;
     private LocationListener locationListener;
     private Handler markerUpdater = new Handler();
     private TextView updateTime;
-
+    private TextView Tvweather;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-
+        Tvweather=(TextView)findViewById(R.id.TV_weather);
+        localweather=new LocalWeatherHandler(localnet);
         updateTime = (TextView) findViewById(R.id.updateTime);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -233,6 +234,19 @@ CameraPosition c = mMap.getCameraPosition();
                     }
                     updateTimeHandler.post(updateTimeRunnable);
                     markerUpdater.postDelayed(markerUpdaterRunnable, 5000);
+                    break;
+            }
+        }
+    };
+    private Handler localnet = new Handler(){
+
+        @Override
+        public void handleMessage(Message msg){
+            switch(msg.what) {
+                case 200:
+
+                    Tvweather.setText(localweather.LocalWeather.get(0).LocalWeatherData.get(localweather.scope).elementValue);
+                                                    //determineTown(Location) 放在0的位置
                     break;
             }
         }

@@ -20,6 +20,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -115,6 +116,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.setInfoWindowAdapter(new MapsActivity_InfoWindowAdapter(MapsActivity.this));
         mMap.setOnMarkerClickListener(markerClickListener);
         mMap.setOnMapClickListener(onMapClickListener);
+        /*mMap.setOnCameraMoveListener(new GoogleMap.OnCameraMoveListener() {
+            @Override
+            public void onCameraMove() {
+CameraPosition c = mMap.getCameraPosition();
+                Log.d("cameraMoveeeee", Double.toString(c.target.latitude) + "  ,   " + Double.toString(c.target.longitude));
+            }
+        });*/
+        mMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
+            @Override
+            public void onCameraIdle() {
+                CameraPosition c = mMap.getCameraPosition();
+                Log.d("cameraMoveeeee", Double.toString(c.target.latitude) + "  ,   " + Double.toString(c.target.longitude));
+            }
+        });
         opendata = new OpendataHandler(net);
 
         Location initLocation = null;

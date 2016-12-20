@@ -154,6 +154,7 @@ public class StationListActivity extends AppCompatActivity {
             int size = opendata.stations.size();
 
             if(here == null){
+                here = new Location(LocationManager.PASSIVE_PROVIDER);
                 here.setLatitude(24.9699);
                 here.setLongitude(121.266);
             }

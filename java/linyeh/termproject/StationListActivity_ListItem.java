@@ -34,9 +34,9 @@ public class StationListActivity_ListItem extends ArrayAdapter<uBikeStationInfo>
         TextView txtDistance = (TextView) rowView.findViewById(R.id.distance);
         ImageView imageView = (ImageView) rowView.findViewById(R.id.img);
         txtTitle.setText(stationList.get(position).stationName);
-        txtDistance.setText("距離此處：" + Integer.toString(Math.round(stationList.get(position).distance)) + "公尺");
+        txtDistance.setText("距離此處\n" + Integer.toString(Math.round(stationList.get(position).distance)) + "公尺");
         txtContent.setText("可借數量：" + stationList.get(position).usableNum + "    可還數量：" + stationList.get(position).returanableNum);
-        imageView.setImageResource(R.drawable.ic_place_black_24dp);
+        imageView.setImageResource(R.drawable.ic_directions_bike_black_24dp);
         return rowView;
     }
 }

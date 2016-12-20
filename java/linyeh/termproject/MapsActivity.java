@@ -205,6 +205,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         public void handleMessage(Message msg){
             switch(msg.what) {
                 case 200:
+                    updateTimeHandler.removeCallbacks(updateTimeRunnable);
                     updateTime.setText("資料更新中...");
                     String title_isClicking = null;
                     if(marker_isClicking != null)

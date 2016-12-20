@@ -149,6 +149,7 @@ public class StationListActivity extends AppCompatActivity {
     private Handler handler = new Handler(){
         @Override
         public void handleMessage(Message msg){
+            updateTimeHandler.removeCallbacks(updateTimeRunnable);
             updateTime.setText("資料更新中...");
             int size = opendata.stations.size();
 

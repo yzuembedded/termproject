@@ -49,7 +49,7 @@ public class WeatherdataHandler {
           //  Log.d("dt1",Long.toString(dt1.getTime()));
           //  Log.d("dt2",Long.toString(dt2.getTime()));
             Nowtime = new Date();
-            Log.d("Nowtime",Long.toString(Nowtime.getTime()));
+
             dt4 = sdf.parse(weatherdata2.get(0).startTime);
             dt5 = sdf.parse(weatherdata2.get(0).endTime);
            // Log.d("dt4",Long.toString(dt4.getTime()));
@@ -137,20 +137,17 @@ public class WeatherdataHandler {
                     }
                     if(i==0)
                     {
-                        Log.d("0",temp.startTime);
-                        Log.d("0",temp.endTime);
+
                         weatherdata.add(temp);
                     }
                     else if(i==1)
                     {
-                        Log.d("1",temp.startTime);
-                        Log.d("1",temp.endTime);
+
                         weatherdata1.add(temp);
                     }
                     else if(i==2)
                     {
-                        Log.d("2",temp.startTime);
-                        Log.d("2",temp.endTime);
+
                         weatherdata2.add(temp);
                     }
 

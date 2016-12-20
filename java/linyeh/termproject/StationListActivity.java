@@ -146,10 +146,9 @@ public class StationListActivity extends AppCompatActivity {
         @Override
         public void handleMessage(Message msg){
             int size = opendata.stations.size();
-
             if(here == null){
-                here.setLatitude(24.9699);
-                here.setLongitude(121.266);
+                here = new Location(LocationManager.PASSIVE_PROVIDER);
+                
             }
             for (int i = 0; i < size; ++i) {
                 float[] d = new float[1];

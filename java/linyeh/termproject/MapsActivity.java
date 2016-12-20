@@ -20,6 +20,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -38,7 +39,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         Tvweather=(TextView)findViewById(R.id.TV_weather);
-        localweather=new LocalWeatherHandler(localnet);
+
         updateTime = (TextView) findViewById(R.id.updateTime);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -109,6 +110,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     };
 
+    private Location mapCameraLocation = new Location(LocationManager.PASSIVE_PROVIDER);
+
+    private Handler localweahterHandler = new Handler();
+    private Runnable localweatherRunnable = new Runnable() {
+        @Override
+        public void run() {
+            localweather = new LocalWeatherHandler(localnet);
+            CameraPosition c = mMap.getCameraPosition();
+            mapCameraLocation.setLatitude(c.target.latitude);
+            mapCameraLocation.setLongitude(c.target.longitude);
+        }
+    };
+
     @Override
     public void onMapReady(GoogleMap googleMap) { // YZU      24.9699      121.266
         mMap = googleMap;
@@ -116,6 +130,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.setInfoWindowAdapter(new MapsActivity_InfoWindowAdapter(MapsActivity.this));
         mMap.setOnMarkerClickListener(markerClickListener);
         mMap.setOnMapClickListener(onMapClickListener);
+        mMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
+            @Override
+            public void onCameraIdle() {
+                localweahterHandler.postDelayed(localweatherRunnable, 1500);
+            }
+        });
+        mMap.setOnCameraMoveStartedListener(new GoogleMap.OnCameraMoveStartedListener() {
+            @Override
+            public void onCameraMoveStarted(int i) {
+                localweahterHandler.removeCallbacks(localweatherRunnable);
+            }
+        });
         opendata = new OpendataHandler(net);
 
         Location initLocation = null;
@@ -229,8 +255,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         public void handleMessage(Message msg){
             switch(msg.what) {
                 case 200:
-
-                    Tvweather.setText(localweather.LocalWeather.get(0).LocalName+localweather.LocalWeather.get(0).LocalWeatherData.get(localweather.scope).elementValue);
+                    Tvweather.setText(localweather.LocalWeather.get(localweather.determineTown(mapCameraLocation)).LocalName+localweather.LocalWeather.get(localweather.determineTown(mapCameraLocation)).LocalWeatherData.get(localweather.scope).elementValue);
                                                     //determineTown(Location) 放在0的位置
                     break;
             }

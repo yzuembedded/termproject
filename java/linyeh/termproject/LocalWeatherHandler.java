@@ -201,7 +201,7 @@ public class LocalWeatherHandler {
                 reader.nextName();
                 String a=reader.nextString();
                 temp2.LocalName=a;
-                Log.d("tag",a);
+
                 reader.nextName();
                 reader.skipValue();
                 reader.nextName();

@@ -26,98 +26,16 @@ public class LocalWeatherHandler {
     public String data;
     public int scope;
     private Handler handler;
-    public ArrayList<Location> location;
     public ArrayList<LocalWeatherInfo2> LocalWeather;
     public LocalWeatherHandler(Handler in_handler)
     {
         this.handler=in_handler;
-        location=new ArrayList<Location>();
+
 
         LocalWeather=new ArrayList<LocalWeatherInfo2>();
-        init();
+
         Thread dataThread = new Thread(dataRunnable);
         dataThread.start();
-
-    }
-    public void init()
-    {
-        for(int i=0;i<13;i++) {
-            Location temp = new Location(LocationManager.PASSIVE_PROVIDER);
-            if(i==0) {
-                temp.setLatitude(Double.parseDouble("24.59"));
-                temp.setLongitude(Double.parseDouble("121.18"));
-            }
-            else if(i==1)
-            {
-                temp.setLatitude(Double.parseDouble("24.49"));
-                temp.setLongitude(Double.parseDouble("121.21"));
-            }
-            else if(i==2)
-            {
-                temp.setLatitude(Double.parseDouble("24.57"));
-                temp.setLongitude(Double.parseDouble("121.13"));
-            }
-            else if(i==3)
-            {
-                temp.setLatitude(Double.parseDouble("25.02"));
-                temp.setLongitude(Double.parseDouble("121.04"));
-
-            }
-            else if(i==4)
-            {
-                temp.setLatitude(Double.parseDouble("24.58"));
-                temp.setLongitude(Double.parseDouble("121.06"));
-
-            }
-            else if(i==5)
-            {
-                temp.setLatitude(Double.parseDouble("24.57"));
-                temp.setLongitude(Double.parseDouble("121.12"));
-            }
-            else if(i==6)
-            {
-                temp.setLatitude(Double.parseDouble("25.03"));
-                temp.setLongitude(Double.parseDouble("121.15"));
-
-            }
-            else if(i==7)
-            {
-                temp.setLatitude(Double.parseDouble("25.04"));
-                temp.setLongitude(Double.parseDouble("121.11"));
-
-            }
-            else if(i==8)
-            {
-                temp.setLatitude(Double.parseDouble("24.53"));
-                temp.setLongitude(Double.parseDouble("121.17"));
-
-            }
-            else if(i==9)
-            {
-                temp.setLatitude(Double.parseDouble("24.54"));
-                temp.setLongitude(Double.parseDouble("121.08"));
-
-            }
-            else if(i==10)
-            {
-                temp.setLatitude(Double.parseDouble("24.52"));
-                temp.setLongitude(Double.parseDouble("121.12"));
-
-            }
-            else if(i==11)
-            {
-                temp.setLatitude(Double.parseDouble("25.00"));
-                temp.setLongitude(Double.parseDouble("121.20"));
-
-            }
-            else if(i==12)
-            {
-                temp.setLatitude(Double.parseDouble("24.56"));
-                temp.setLongitude(Double.parseDouble("121.17"));
-
-            }
-            location.add(temp);
-        }
 
     }
     public void Determinetime()  {
@@ -201,7 +119,7 @@ public class LocalWeatherHandler {
                 reader.nextName();
                 String a=reader.nextString();
                 temp2.LocalName=a;
-                Log.d("tag",a);
+
                 reader.nextName();
                 reader.skipValue();
                 reader.nextName();
@@ -314,11 +232,11 @@ public class LocalWeatherHandler {
     {
         int n=0;
         float[] d = new float[1];
-        Location.distanceBetween(stationLatlng.getLatitude(), stationLatlng.getLongitude(), location.get(0).getLatitude(), location.get(0).getLongitude(), d);
+        Location.distanceBetween(stationLatlng.getLatitude(), stationLatlng.getLongitude(), LocalWeather.get(0).stationLatlng.getLatitude(), LocalWeather.get(0).stationLatlng.getLongitude(), d);
         float temp=d[0];
         for (int i = 0; i < 13; ++i) {
             float[] t = new float[1];
-            Location.distanceBetween(stationLatlng.getLatitude(), stationLatlng.getLongitude(), location.get(i).getLatitude(), location.get(i).getLongitude(), t);
+            Location.distanceBetween(stationLatlng.getLatitude(), stationLatlng.getLongitude(), LocalWeather.get(i).stationLatlng.getLatitude(), LocalWeather.get(i).stationLatlng.getLongitude(), t);
             if(temp>t[0])
             {
                 n=i;

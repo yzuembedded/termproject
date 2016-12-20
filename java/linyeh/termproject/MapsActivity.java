@@ -136,6 +136,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 localweahterHandler.postDelayed(localweatherRunnable, 1500);
             }
         });
+        mMap.setOnCameraMoveStartedListener(new GoogleMap.OnCameraMoveStartedListener() {
+            @Override
+            public void onCameraMoveStarted(int i) {
+                localweahterHandler.removeCallbacks(localweatherRunnable);
+            }
+        });
         opendata = new OpendataHandler(net);
 
         Location initLocation = null;

@@ -39,7 +39,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         Tvweather=(TextView)findViewById(R.id.TV_weather);
-        localweather=new LocalWeatherHandler(localnet);
+
         updateTime = (TextView) findViewById(R.id.updateTime);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -110,6 +110,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     };
 
+    private Location mapCameraLocation = new Location(LocationManager.PASSIVE_PROVIDER);
+
     @Override
     public void onMapReady(GoogleMap googleMap) { // YZU      24.9699      121.266
         mMap = googleMap;
@@ -117,18 +119,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.setInfoWindowAdapter(new MapsActivity_InfoWindowAdapter(MapsActivity.this));
         mMap.setOnMarkerClickListener(markerClickListener);
         mMap.setOnMapClickListener(onMapClickListener);
-        /*mMap.setOnCameraMoveListener(new GoogleMap.OnCameraMoveListener() {
-            @Override
-            public void onCameraMove() {
-CameraPosition c = mMap.getCameraPosition();
-                Log.d("cameraMoveeeee", Double.toString(c.target.latitude) + "  ,   " + Double.toString(c.target.longitude));
-            }
-        });*/
         mMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
             @Override
             public void onCameraIdle() {
+                localweather = new LocalWeatherHandler(localnet);
                 CameraPosition c = mMap.getCameraPosition();
-                Log.d("cameraMoveeeee", Double.toString(c.target.latitude) + "  ,   " + Double.toString(c.target.longitude));
+                mapCameraLocation.setLatitude(c.target.latitude);
+                mapCameraLocation.setLongitude(c.target.longitude);
             }
         });
         opendata = new OpendataHandler(net);
@@ -245,7 +242,7 @@ CameraPosition c = mMap.getCameraPosition();
             switch(msg.what) {
                 case 200:
 
-                    Tvweather.setText(localweather.LocalWeather.get(0).LocalWeatherData.get(localweather.scope).elementValue);
+                    Tvweather.setText(localweather.LocalWeather.get(localweather.determineTown(mapCameraLocation)).LocalName+localweather.LocalWeather.get(localweather.determineTown(mapCameraLocation)).LocalWeatherData.get(localweather.scope).elementValue);
                                                     //determineTown(Location) 放在0的位置
                     break;
             }

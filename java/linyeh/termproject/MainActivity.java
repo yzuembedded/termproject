@@ -54,13 +54,15 @@ public class MainActivity extends AppCompatActivity {
                 switch(position){
                     case 0:
                         action.setClass(MainActivity.this, MapsActivity.class);
-                        startActivity(action);
                         break;
                     case 1:
                         action.setClass(MainActivity.this, StationListActivity.class);
-                        startActivity(action);
+                        break;
+                    case 2:
+                        action.setClass(MainActivity.this, UserManualActivity.class);
                         break;
                 }
+                startActivity(action);
             }
         });
     }

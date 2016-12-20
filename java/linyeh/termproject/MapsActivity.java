@@ -167,6 +167,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (initLocation != null) {
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(initLocation.getLatitude(), initLocation.getLongitude()), 15));
         }
+        else{
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(24.9699,121.266), 15));
+        }
     }
 
     private Runnable markerUpdaterRunnable = new Runnable() {

@@ -112,6 +112,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private Location mapCameraLocation = new Location(LocationManager.PASSIVE_PROVIDER);
 
+    private Handler localweahterHandler = new Handler();
+    private Runnable localweatherRunnable = new Runnable() {
+        @Override
+        public void run() {
+            localweather = new LocalWeatherHandler(localnet);
+            CameraPosition c = mMap.getCameraPosition();
+            mapCameraLocation.setLatitude(c.target.latitude);
+            mapCameraLocation.setLongitude(c.target.longitude);
+        }
+    };
+
     @Override
     public void onMapReady(GoogleMap googleMap) { // YZU      24.9699      121.266
         mMap = googleMap;
@@ -122,10 +133,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
             @Override
             public void onCameraIdle() {
-                localweather = new LocalWeatherHandler(localnet);
-                CameraPosition c = mMap.getCameraPosition();
-                mapCameraLocation.setLatitude(c.target.latitude);
-                mapCameraLocation.setLongitude(c.target.longitude);
+                localweahterHandler.postDelayed(localweatherRunnable, 1500);
             }
         });
         opendata = new OpendataHandler(net);

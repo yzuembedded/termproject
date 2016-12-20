@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -28,11 +29,14 @@ public class StationListActivity extends AppCompatActivity {
     private LocationManager locationManager;
     private LocationListener locationListener;
     private Location here = null;
+    private TextView updateTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_station_list);
+
+        updateTime = (TextView) findViewById(R.id.updateTime);
 
         opendata = new OpendataHandler(handler);
 
@@ -145,6 +149,7 @@ public class StationListActivity extends AppCompatActivity {
     private Handler handler = new Handler(){
         @Override
         public void handleMessage(Message msg){
+            updateTime.setText("資料更新中...");
             int size = opendata.stations.size();
 
             if(here == null){
@@ -183,7 +188,24 @@ public class StationListActivity extends AppCompatActivity {
                 Log.d("smooth", Integer.toString(scrollPosition));
                 listView.setSelection(scrollPosition);
             }
+            updateTimeHandler.post(updateTimeRunnable);
             updater.postDelayed(updaterRunnable, 5000);
+        }
+    };
+
+    private int updateTimeSec = 5;
+    private Handler updateTimeHandler = new Handler();
+    private Runnable updateTimeRunnable = new Runnable() {
+        @Override
+        public void run() {
+            if(updateTimeSec >= 0) {
+                updateTime.setText("將於" + Integer.toString(updateTimeSec) + "後更新");
+                updateTimeSec = updateTimeSec - 1;
+                updateTimeHandler.postDelayed(updateTimeRunnable, 1000);
+            }
+            else{
+                updateTimeSec = 5;
+            }
         }
     };
 }

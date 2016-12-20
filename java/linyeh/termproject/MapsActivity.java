@@ -12,6 +12,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -30,12 +31,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private LocationManager locationManager;
     private LocationListener locationListener;
     private Handler markerUpdater = new Handler();
+    private TextView updateTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
+        updateTime = (TextView) findViewById(R.id.updateTime);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
     }
@@ -181,11 +184,28 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         return location;
     }
 
+    private int updateTimeSec = 5;
+    private Handler updateTimeHandler = new Handler();
+    private Runnable updateTimeRunnable = new Runnable() {
+        @Override
+        public void run() {
+            if(updateTimeSec >= 0) {
+                updateTime.setText("將於" + Integer.toString(updateTimeSec) + "後更新");
+                updateTimeSec = updateTimeSec - 1;
+                updateTimeHandler.postDelayed(updateTimeRunnable, 1000);
+            }
+            else{
+                updateTimeSec = 5;
+            }
+        }
+    };
+
     private Handler net = new Handler(){
         @Override
         public void handleMessage(Message msg){
             switch(msg.what) {
                 case 200:
+                    updateTime.setText("資料更新中...");
                     String title_isClicking = null;
                     if(marker_isClicking != null)
                         title_isClicking = marker_isClicking.getTitle();
@@ -195,6 +215,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             drawMarker(opendata.stations.get(i), marker_isClicking != null && opendata.stations.get(i).stationName.equals(title_isClicking));
                         }
                     }
+                    updateTimeHandler.post(updateTimeRunnable);
                     markerUpdater.postDelayed(markerUpdaterRunnable, 5000);
                     break;
             }

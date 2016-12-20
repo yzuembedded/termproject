@@ -11,6 +11,14 @@
     tools:context="linyeh.termproject.StationListActivity">
 
     <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/updateTime"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:paddingRight="5dp" />
+
+    <TextView
         android:text="各站列表（由近至遠）"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

@@ -241,7 +241,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         public void handleMessage(Message msg){
             switch(msg.what) {
                 case 200:
-
                     Tvweather.setText(localweather.LocalWeather.get(localweather.determineTown(mapCameraLocation)).LocalName+localweather.LocalWeather.get(localweather.determineTown(mapCameraLocation)).LocalWeatherData.get(localweather.scope).elementValue);
                                                     //determineTown(Location) 放在0的位置
                     break;

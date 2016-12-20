@@ -230,7 +230,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             switch(msg.what) {
                 case 200:
 
-                    Tvweather.setText(localweather.LocalWeather.get(0).LocalWeatherData.get(localweather.scope).elementValue);
+                    Tvweather.setText(localweather.LocalWeather.get(0).LocalName+localweather.LocalWeather.get(0).LocalWeatherData.get(localweather.scope).elementValue);
                                                     //determineTown(Location) 放在0的位置
                     break;
             }

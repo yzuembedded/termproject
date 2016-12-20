@@ -223,61 +223,21 @@ public class LocalWeatherHandler {
         data = sb.toString();
 
     };
+
     public int determineTown(Location stationLatlng)
     {
         int n=0;
-        double All;
-        double Mlat;
-        double Mlng;
-        if(stationLatlng.getLatitude()>LocalWeather.get(0).stationLatlng.getLatitude())
-        {
-            Mlat =stationLatlng.getLatitude()-LocalWeather.get(0).stationLatlng.getLatitude();
-        }
-        else
-        {
-           Mlat=LocalWeather.get(0).stationLatlng.getLatitude()-stationLatlng.getLatitude();
-        }
-
-
-        if(stationLatlng.getLongitude()>LocalWeather.get(0).stationLatlng.getLongitude())
-        {
-            Mlng=stationLatlng.getLongitude()-LocalWeather.get(0).stationLatlng.getLongitude();
-
-        }
-        else
-        {
-            Mlng=LocalWeather.get(0).stationLatlng.getLongitude()-stationLatlng.getLongitude();
-        }
-        All=Mlat+Mlng;
-        for(int i=1;i<13;i++)
-        {
-            double latTemp;
-            double lngTemp;
-            if(stationLatlng.getLatitude()>LocalWeather.get(i).stationLatlng.getLatitude())
-            {
-                latTemp =stationLatlng.getLatitude()-LocalWeather.get(i).stationLatlng.getLatitude();
-            }
-            else
-            {
-                latTemp=LocalWeather.get(i).stationLatlng.getLatitude()-stationLatlng.getLatitude();
-            }
-
-            if(stationLatlng.getLongitude()>LocalWeather.get(i).stationLatlng.getLongitude())
-            {
-                lngTemp=stationLatlng.getLongitude()-LocalWeather.get(i).stationLatlng.getLongitude();
-
-            }
-            else
-            {
-                lngTemp=LocalWeather.get(i).stationLatlng.getLongitude()-stationLatlng.getLongitude();
-            }
-
-            if(All>latTemp+lngTemp)
+        float[] d = new float[1];
+        Location.distanceBetween(stationLatlng.getLatitude(), stationLatlng.getLongitude(), LocalWeather.get(0).stationLatlng.getLatitude(), LocalWeather.get(0).stationLatlng.getLongitude(), d);
+        float temp=d[0];
+        for (int i = 0; i < 13; ++i) {
+            float[] t = new float[1];
+            Location.distanceBetween(stationLatlng.getLatitude(), stationLatlng.getLongitude(), LocalWeather.get(i).stationLatlng.getLatitude(), LocalWeather.get(i).stationLatlng.getLongitude(), t);
+            if(temp>t[0])
             {
                 n=i;
-                All=latTemp+lngTemp;
+                temp=t[0];
             }
-
         }
 
       return n;

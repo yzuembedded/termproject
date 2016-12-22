@@ -1,5 +1,6 @@
 package linyeh.termproject;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -14,6 +15,10 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -25,74 +30,83 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+
     private LocalWeatherHandler localweather;
     public GoogleMap mMap;
     private OpendataHandler opendata;
-    private LocationManager locationManager;
-    private LocationListener locationListener;
+    GoogleApiClient mGoogleApiClient;
     private Handler markerUpdater = new Handler();
     private TextView updateTime;
     private TextView Tvweather;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-        Tvweather=(TextView)findViewById(R.id.TV_weather);
-
+        mGoogleApiClient = new GoogleApiClient.Builder(this).addConnectionCallbacks(this).addOnConnectionFailedListener(this).addApi(LocationServices.API).build();
+        Tvweather = (TextView) findViewById(R.id.TV_weather);
         updateTime = (TextView) findViewById(R.id.updateTime);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+    }
+
+    private com.google.android.gms.location.LocationListener locationListener = new com.google.android.gms.location.LocationListener() {
+        @Override
+        public void onLocationChanged(Location location) {
+            Log.d("calllllllllllllllllllll", "callllllllllllllllllllllllllllllllll");
+            if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                return;
+            }
+            Log.d("calllllllllllllllllllll", "callllllllllllllllllllllllllllllllll");
+            Location initLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+            if(initLocation != null) {
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(initLocation.getLatitude(), initLocation.getLongitude()), 15));
+                Log.d("getlocation", "success!");
+            }
+            else{
+                Log.d("onConnectedgetlocation", "fail");
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(24.969820,121.266557), 15));
+            }
+            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+            mGoogleApiClient.disconnect();
+        }
+    };
+
+    @Override
+    public void onConnected(Bundle connectionHint) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        Log.d("onConnected", "onConnected");
+        //LocationRequest locationRequest = LocationRequest.create().setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY).setInterval(10000).setFastestInterval(2000);
+        LocationRequest locationRequest = new LocationRequest();
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY).setInterval(10000).setFastestInterval(2000);
+        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, locationRequest, locationListener);
+
+    }
+
+    @Override
+    public void onConnectionSuspended(int s){
+        Log.d("suspend", "suspend");
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult r){
+        Log.d("getlocation", "fail");
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(24.969820,121.266557), 15));
+        mGoogleApiClient.disconnect();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         markerUpdater.removeCallbacks(markerUpdaterRunnable);
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) { return; }
-        else {
-            locationManager.removeUpdates(locationListener);
-        }
-        locationManager = null;
-        locationListener = null;
     }
 
     @Override
     protected void onResume(){
         super.onResume();
-        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        locationListener = new LocationListener() {
-            @Override
-            public void onLocationChanged(Location location) {
-                if(location != null) {
-                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 15));
-                    Log.d("onLocationChanged", Double.toString(location.getLatitude()) + " " + Double.toString(location.getLongitude()));
-                    if (ActivityCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                            && ActivityCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                        return;
-                    } else {
-                        Log.d("onLocationChanged", "listenerRemove1");
-                        locationManager.removeUpdates(locationListener);
-                    }
-                }
-            }
-
-            @Override
-            public void onStatusChanged(String s, int i, Bundle bundle) {
-
-            }
-
-            @Override
-            public void onProviderEnabled(String s) {
-
-            }
-
-            @Override
-            public void onProviderDisabled(String s) {
-
-            }
-        };
     }
 
     private Marker marker_isClicking = null;
@@ -116,10 +130,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Runnable localweatherRunnable = new Runnable() {
         @Override
         public void run() {
-            localweather = new LocalWeatherHandler(localnet);
             CameraPosition c = mMap.getCameraPosition();
             mapCameraLocation.setLatitude(c.target.latitude);
             mapCameraLocation.setLongitude(c.target.longitude);
+            localweather = new LocalWeatherHandler(localnet);
         }
     };
 
@@ -144,32 +158,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
         opendata = new OpendataHandler(net);
 
-        Location initLocation = null;
-
         Intent in_intent = getIntent();
         Bundle bundle = in_intent.getExtras();
-        if(bundle != null && bundle.containsKey("Lat") && bundle.containsKey("Lng")){
-            initLocation = new Location(LocationManager.PASSIVE_PROVIDER);
-            initLocation.setLatitude(bundle.getDouble("Lat"));
-            initLocation.setLongitude(bundle.getDouble("Lng"));
+        if(bundle != null && bundle.containsKey("Lat") && bundle.containsKey("Lng") && bundle.containsKey("stationName")){
             marker_isClicking = mMap.addMarker(new MarkerOptions().title(bundle.getString("stationName")).position(new LatLng(bundle.getDouble("Lat"), bundle.getDouble("Lng"))));
         }
-        else {
-            initLocation = getCurrentLocation();
-            if (ActivityCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                    && ActivityCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                return;
-            } else {
-                Log.d("onLocationChanged", "listenerRemove2");
-                //locationManager.removeUpdates(locationListener);
-            }
-        }
-        if (initLocation != null) {
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(initLocation.getLatitude(), initLocation.getLongitude()), 15));
-        }
         else{
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(24.9699,121.266), 15));
+            mGoogleApiClient.connect();
         }
+        Log.d("onMapReady", "called");
     }
 
     private Runnable markerUpdaterRunnable = new Runnable() {
@@ -188,30 +185,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 marker_isClicking = m;
                 m.showInfoWindow();
             }
-            //mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
-            //mMap.moveCamera(CameraUpdateFactory.newLatLng(yzu));
-            //mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(yzu, 15));
         }
-    }
-
-    private Location getCurrentLocation() {
-        boolean isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER),
-                isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-
-        Location location = null;
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return null;
-        }
-        if (isGPSEnabled) {
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 5000, locationListener);
-            location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        }
-        else if(isNetworkEnabled){
-            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 5000, locationListener);
-            location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-        }
-        return location;
     }
 
     private int updateTimeSec = 5;
@@ -259,7 +233,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             switch(msg.what) {
                 case 200:
                     Tvweather.setText(localweather.LocalWeather.get(localweather.determineTown(mapCameraLocation)).LocalName+localweather.LocalWeather.get(localweather.determineTown(mapCameraLocation)).LocalWeatherData.get(localweather.scope).elementValue);
-                                                    //determineTown(Location) 放在0的位置
                     break;
             }
         }

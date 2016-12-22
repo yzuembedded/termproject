@@ -13,9 +13,6 @@ import android.widget.ListView;
 import android.view.*;
 import android.os.Handler;
 
-import com.google.android.gms.awareness.state.Weather;
-import com.google.android.gms.vision.text.Text;
-
 public class MainActivity extends AppCompatActivity {
     private TextView WX;
     private TextView IC;

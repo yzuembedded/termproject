@@ -1,5 +1,6 @@
 package linyeh.termproject;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -17,17 +18,20 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+
 import java.util.Collections;
 import java.util.Comparator;
 
-public class StationListActivity extends AppCompatActivity {
+public class StationListActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     private ListView listView;
     private OpendataHandler opendata;
+    GoogleApiClient mGoogleApiClient;
     private StationListActivity_ListItem adapter;
-    //private int[] id;
-    private LocationManager locationManager;
-    private LocationListener locationListener;
     private Location here = null;
     private TextView updateTime;
 
@@ -35,6 +39,8 @@ public class StationListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_station_list);
+
+        mGoogleApiClient = new GoogleApiClient.Builder(this).addConnectionCallbacks(this).addOnConnectionFailedListener(this).addApi(LocationServices.API).build();
 
         updateTime = (TextView) findViewById(R.id.updateTime);
 
@@ -60,82 +66,62 @@ public class StationListActivity extends AppCompatActivity {
         });
     }
 
+    private com.google.android.gms.location.LocationListener locationListener = new com.google.android.gms.location.LocationListener() {
+        @Override
+        public void onLocationChanged(Location location) {
+            Log.d("calllllllllllllllllllll", "callllllllllllllllllllllllllllllllll");
+            if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                return;
+            }
+            Log.d("calllllllllllllllllllll", "callllllllllllllllllllllllllllllllll");
+            Location initLocation =  LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+            if(initLocation != null) {
+                here = initLocation;
+                Log.d("getlocation", "success!");
+            }
+            else{
+                here = null;
+            }
+            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+            mGoogleApiClient.disconnect();
+        }
+    };
+
+    @Override
+    public void onConnected(Bundle connectionHint) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        Log.d("onConnected", "onConnected");
+        //LocationRequest locationRequest = LocationRequest.create().setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY).setInterval(10000).setFastestInterval(2000);
+        LocationRequest locationRequest = new LocationRequest();
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY).setInterval(10000).setFastestInterval(2000);
+        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, locationRequest, locationListener);
+
+    }
+
+    @Override
+    public void onConnectionSuspended(int s){
+        Log.d("suspend", "suspend");
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult r){
+        Log.d("getlocation", "fail");
+        here = null;
+        mGoogleApiClient.disconnect();
+    }
+
     @Override
     protected void onPause() {
         super.onPause();
         updater.removeCallbacks(updaterRunnable);
-        Log.d("onPause", "removeCallbacks");
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) { return; }
-        else {
-            locationManager.removeUpdates(locationListener);
-        }
-        locationManager = null;
-        locationListener = null;
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-
-        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        locationListener = new LocationListener() {
-            @Override
-            public void onLocationChanged(Location location) {
-                if (location != null) {
-                    here = location;
-                    Log.d("onLocationChanged", Double.toString(location.getLatitude()) + " " + Double.toString(location.getLongitude()));
-
-                    if (ActivityCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                            && ActivityCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                        return;
-                    } else {
-                        Log.d("onLocationChanged", "listenerRemove1");
-                        locationManager.removeUpdates(locationListener);
-                    }
-                }
-            }
-
-            @Override
-            public void onStatusChanged(String s, int i, Bundle bundle) {
-
-            }
-
-            @Override
-            public void onProviderEnabled(String s) {
-
-            }
-
-            @Override
-            public void onProviderDisabled(String s) {
-
-            }
-        };
-        Location initLocation = null;
-        initLocation = getCurrentLocation();
-        if (initLocation != null) {
-            here = initLocation;
-        }
-    }
-
-    private Location getCurrentLocation() {
-        boolean isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER),
-                isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-
-        Location location = null;
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return null;
-        }
-        if (isGPSEnabled) {
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 5000, locationListener);
-            location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        }
-        else if(isNetworkEnabled){
-            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 5000, locationListener);
-            location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-        }
-        return location;
+        mGoogleApiClient.connect();
     }
 
     private Handler updater = new Handler();

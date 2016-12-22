@@ -14,7 +14,6 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import android.util.JsonReader;
-import android.util.Log;
 import java.io.IOException;
 import java.io.StringReader;
 import java.net.MalformedURLException;
@@ -47,8 +46,8 @@ public class LocalWeatherHandler {
             {
                 dt1 = sdf.parse(LocalWeather.get(0).LocalWeatherData.get(i).startTime);
                 dt2 = sdf.parse(LocalWeather.get(0).LocalWeatherData.get(i).endTime);
-                  Log.d("dt1",Long.toString(dt1.getTime()));
-                  Log.d("dt2",Long.toString(dt2.getTime()));
+                  /*Log.d("dt1",Long.toString(dt1.getTime()));
+                  Log.d("dt2",Long.toString(dt2.getTime()));*/
                 if (dt1.getTime() < Nowtime.getTime() ) {
                     scope = i;
                     break;

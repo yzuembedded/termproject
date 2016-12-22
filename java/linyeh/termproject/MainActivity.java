@@ -20,12 +20,12 @@ public class MainActivity extends AppCompatActivity {
     private ListView listView;
 
     private WeatherdataHandler weatherH;
-    private String[] list = {"  租賃站地圖","  租賃站列表","  使用說明"};
+    private String[] list = {"  租賃站地圖","  租賃站列表","  費率計算","  使用說明"};
     Integer[] imageId = {
             R.drawable.ic_place_black_24dp,
             R.drawable.ic_directions_bike_black_24dp,
-
-            R.drawable.ic_event_note_black_24dp,
+            R.drawable.ic_timer_black_24dp,
+            R.drawable.ic_event_note_black_24dp
     };
 
     @Override
@@ -56,6 +56,9 @@ public class MainActivity extends AppCompatActivity {
                         action.setClass(MainActivity.this, StationListActivity.class);
                         break;
                     case 2:
+                        action.setClass(MainActivity.this, MoneyCalculator.class);
+                        break;
+                    case 3:
                         action.setClass(MainActivity.this, UserManualActivity.class);
                         break;
                 }

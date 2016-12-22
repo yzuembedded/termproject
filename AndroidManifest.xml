@@ -41,7 +41,8 @@
             android:name=".MapsActivity"
             android:label="@string/title_activity_maps" />
         <activity android:name=".StationListActivity" />
-        <activity android:name=".UserManualActivity"></activity>
+        <activity android:name=".UserManualActivity" />
+        <activity android:name=".MoneyCalculator"></activity>
     </application>
 
 </manifest>

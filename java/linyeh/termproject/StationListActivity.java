@@ -95,7 +95,7 @@ public class StationListActivity extends AppCompatActivity implements GoogleApiC
         Log.d("onConnected", "onConnected");
         //LocationRequest locationRequest = LocationRequest.create().setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY).setInterval(10000).setFastestInterval(2000);
         LocationRequest locationRequest = new LocationRequest();
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY).setInterval(10000).setFastestInterval(2000);
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY).setInterval(10000).setFastestInterval(2000).setExpirationDuration(5000);
         LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, locationRequest, locationListener);
 
     }
@@ -166,11 +166,11 @@ public class StationListActivity extends AppCompatActivity implements GoogleApiC
             for(int i=0; i<size; ++i)
                 id[i] = i;*/
             adapter = new StationListActivity_ListItem(StationListActivity.this, opendata.stations);
-            for(int i=size-1; i>=0; --i){
+            /*for(int i=size-1; i>=0; --i){
                 if(!opendata.stations.get(i).isActive){
                     adapter.remove(opendata.stations.get(i));
                 }
-            }
+            }*/
             listView.setAdapter(adapter);
             if(scrollPosition != -1) {
                 Log.d("smooth", Integer.toString(scrollPosition));

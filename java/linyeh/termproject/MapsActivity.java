@@ -81,9 +81,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Log.d("onConnected", "onConnected");
         //LocationRequest locationRequest = LocationRequest.create().setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY).setInterval(10000).setFastestInterval(2000);
         LocationRequest locationRequest = new LocationRequest();
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY).setInterval(10000).setFastestInterval(2000);
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY).setInterval(10000).setFastestInterval(2000).setExpirationDuration(5000);
         LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, locationRequest, locationListener);
-
     }
 
     @Override
@@ -161,11 +160,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Intent in_intent = getIntent();
         Bundle bundle = in_intent.getExtras();
         if(bundle != null && bundle.containsKey("Lat") && bundle.containsKey("Lng") && bundle.containsKey("stationName")){
-            marker_isClicking = mMap.addMarker(new MarkerOptions().title(bundle.getString("stationName")).position(new LatLng(bundle.getDouble("Lat"), bundle.getDouble("Lng"))));
+            LatLng p = new LatLng(bundle.getDouble("Lat"), bundle.getDouble("Lng"));
+            marker_isClicking = mMap.addMarker(new MarkerOptions().title(bundle.getString("stationName")).position(p));
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(p, 15));
         }
         else{
             mGoogleApiClient.connect();
         }
+        icon_black = BitmapDescriptorFactory.fromResource(R.drawable.ic_place_black_24dp);
+        icon_red = BitmapDescriptorFactory.fromResource(R.drawable.ic_place_black_24dp_red);
+        icon_green = BitmapDescriptorFactory.fromResource(R.drawable.ic_place_black_24dp_green);
+        icon_orange = BitmapDescriptorFactory.fromResource(R.drawable.ic_place_black_24dp_orange);
         Log.d("onMapReady", "called");
     }
 
@@ -176,11 +181,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     };
 
+    BitmapDescriptor icon_black;
+    BitmapDescriptor icon_red;
+    BitmapDescriptor icon_green;
+    BitmapDescriptor icon_orange;
+
     private void drawMarker(uBikeStationInfo info, boolean needShowInfo){
         if(info.stationLatlng != null) {
             LatLng latLng = new LatLng(info.stationLatlng.getLatitude(), info.stationLatlng.getLongitude());
-            BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_place_black_24dp);
-            Marker m = mMap.addMarker(new MarkerOptions().position(latLng).title(info.stationName).snippet(info.getContent()).icon(icon));
+            MarkerOptions t = new MarkerOptions();
+            t.position(latLng).title(info.stationName).snippet(info.getContent());
+            if(!info.isActive)
+                t.icon(icon_black);
+            else if(info.usableNum == 0)
+                t.icon(icon_orange);
+            else if(info.returanableNum == 0)
+                t.icon(icon_red);
+            else
+                t.icon(icon_green);
+            Marker m = mMap.addMarker(t);
             if(needShowInfo) {
                 marker_isClicking = m;
                 m.showInfoWindow();
@@ -216,9 +235,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         title_isClicking = marker_isClicking.getTitle();
                     mMap.clear();
                     for (int i = 0; i < opendata.stations.size(); ++i) {
-                        if (opendata.stations.get(i).isActive) {
-                            drawMarker(opendata.stations.get(i), marker_isClicking != null && opendata.stations.get(i).stationName.equals(title_isClicking));
-                        }
+                        drawMarker(opendata.stations.get(i), marker_isClicking != null && opendata.stations.get(i).stationName.equals(title_isClicking));
                     }
                     updateTimeHandler.post(updateTimeRunnable);
                     markerUpdater.postDelayed(markerUpdaterRunnable, 5000);

@@ -1,14 +1,22 @@
 package linyeh.termproject;
 
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Handler;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.Calendar;
+import java.util.Date;
+
+import static android.content.DialogInterface.BUTTON_POSITIVE;
+import static android.content.DialogInterface.BUTTON_NEGATIVE;
 
 public class MoneyCalculator extends AppCompatActivity {
 
@@ -17,6 +25,7 @@ public class MoneyCalculator extends AppCompatActivity {
     private TextView txtMoney;
     private int state = 0; // 0:開始計時，1:停止計時
     private long time_sec = 0;
+    private int cal_money = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,7 +41,8 @@ public class MoneyCalculator extends AppCompatActivity {
             public void onClick(View v) {
                 switch (state){
                     case 0:
-                        time_sec = 16198;
+                        time_sec = 0;
+                        cal_money = 0;
                         button.setText("停止計時");
                         txtTime.setText("00 : 00 : 00");
                         txtMoney.setText("0 元");
@@ -43,11 +53,32 @@ public class MoneyCalculator extends AppCompatActivity {
                         button.setText("開始計時");
                         timer.removeCallbacks(timerRunnable);
                         state = 0;
+                        AlertDialog.Builder builder = new AlertDialog.Builder(MoneyCalculator.this);
+                        builder.setTitle("選擇視窗");
+                        builder.setTitle("費用為：" + Long.toString(cal_money) + "\n是否搜尋最近站點？");
+                        builder.setPositiveButton("是", DialogOnclickListener);
+                        builder.setNegativeButton("否", DialogOnclickListener);
+                        builder.show();
                         break;
                 }
             }
         });
     }
+
+    private DialogInterface.OnClickListener DialogOnclickListener = new DialogInterface.OnClickListener() {
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+            switch(which){
+                case BUTTON_POSITIVE:
+                    Intent action = new Intent();
+                    action.setClass(MoneyCalculator.this, StationListActivity.class);
+                    startActivity(action);
+                    break;
+                case BUTTON_NEGATIVE:
+                    break;
+            }
+        }
+    };
 
     private Handler timer = new Handler();
     private Runnable timerRunnable = new Runnable() {
@@ -61,7 +92,7 @@ public class MoneyCalculator extends AppCompatActivity {
                     (calendar.get(Calendar.MINUTE)<10?"0"+Integer.toString(calendar.get(Calendar.MINUTE)):Integer.toString(calendar.get(Calendar.MINUTE))) + " : " +
                             (calendar.get(Calendar.SECOND)<10?"0"+Integer.toString(calendar.get(Calendar.SECOND)):Integer.toString(calendar.get(Calendar.SECOND))));
 
-            int cal_money = 0;
+
             long tmp_sec = time_sec;
 
             if(tmp_sec <= 30*60 && tmp_sec > 0){

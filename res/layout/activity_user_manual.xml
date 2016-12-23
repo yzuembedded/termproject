@@ -4,27 +4,35 @@
     android:id="@+id/activity_user_manual"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="linyeh.termproject.UserManualActivity">
 
-    <TextView
-        android:text="使用說明"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true"
-        android:id="@+id/textView2"
-        android:textSize="36sp" />
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-    <TextView
-        android:text="1.此應用程式為桃園uBike查詢系統。\n\n 2.首頁顯示之天氣資訊為桃園市天氣資訊。\n\n 3.租賃站地圖為uBike站點之地圖資訊，初始定位為使用者所在地，若無法定位則預設為元智大學。\n\n 4.租賃站地圖中站點資訊包含站點名稱，可借、可歸還車輛數目，並且每五秒更新一次。\n\n 5.租賃站地圖中的氣象資訊為地圖所在地之資訊。\n\n 6.租賃站列表為uBike站點之條列式資訊，距離使用者所在地由近至遠排列。\n\n 7.租賃站列表中站點資訊包含站點名稱，可借、可歸還車輛數目，並且每五秒更新一次。\n\n 8.此應用程式由元智大學資訊工程學系1033305林岳儒、1033308葉庭安製作。\n\n 9.特別感謝楊正仁教授、盧芃學長、鍾羽函學姊一學期以來努力的指導，您們辛苦了！！\n\n"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/textView"
-        android:layout_below="@+id/textView2"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="20dp" />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp">
+
+            <TextView
+                android:text="使用說明"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentStart="true"
+                android:id="@+id/textView2"
+                android:textSize="36sp" />
+
+            <TextView
+                android:text="1.此應用程式為桃園uBike查詢系統。\n\n 2.首頁顯示之天氣資訊為桃園市天氣資訊。\n\n 3.租賃站地圖為uBike站點之地圖資訊，初始定位為使用者所在地，若無法定位則預設為元智大學。\n\n 4.租賃站地圖中站點資訊包含站點名稱，可借、可歸還車輛數目，並且每五秒更新一次。\n\n 5.租賃站地圖中的氣象資訊為地圖所在地之資訊。\n\n 6.租賃站列表為uBike站點之條列式資訊，距離使用者所在地由近至遠排列。\n\n 7.租賃站列表中站點資訊包含站點名稱，可借、可歸還車輛數目，並且每五秒更新一次。\n\n 8.此應用程式由元智大學資訊工程學系1033305林岳儒、1033308葉庭安製作。\n\n 9.特別感謝楊正仁教授、盧芃學長、鍾羽函學姊一學期以來努力的指導，您們辛苦了！！\n\n"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/textView"
+                android:layout_below="@+id/textView2"
+                android:layout_alignParentStart="true"
+                android:layout_marginTop="20dp" />
+        </RelativeLayout>
+    </ScrollView>
+
 </RelativeLayout>

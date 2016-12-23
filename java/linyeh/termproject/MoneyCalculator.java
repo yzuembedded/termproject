@@ -86,12 +86,9 @@ public class MoneyCalculator extends AppCompatActivity {
         public void run() {
             timer.postDelayed(timerRunnable, 1000);
             ++time_sec;
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTimeInMillis(time_sec*1000);
-            txtTime.setText((calendar.get(Calendar.HOUR)<10?"0"+Integer.toString(calendar.get(Calendar.HOUR)):Integer.toString(calendar.get(Calendar.HOUR))) + " : " +
-                    (calendar.get(Calendar.MINUTE)<10?"0"+Integer.toString(calendar.get(Calendar.MINUTE)):Integer.toString(calendar.get(Calendar.MINUTE))) + " : " +
-                            (calendar.get(Calendar.SECOND)<10?"0"+Integer.toString(calendar.get(Calendar.SECOND)):Integer.toString(calendar.get(Calendar.SECOND))));
-
+            txtTime.setText(((int)(time_sec/3600)<10?"0"+Integer.toString((int)(time_sec/3600)):Integer.toString((int)(time_sec/3600))) + " : " +
+                    ((int)((time_sec/60)%60)<10?"0"+Integer.toString((int)((time_sec/60)%60)):Integer.toString((int)((time_sec/60)%60))) + " : " +
+                            ((int)(time_sec%60)<10?"0"+Integer.toString((int)(time_sec%60)):Integer.toString((int)(time_sec%60))));
 
             long tmp_sec = time_sec;
 

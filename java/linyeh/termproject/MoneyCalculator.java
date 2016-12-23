@@ -62,7 +62,7 @@ public class MoneyCalculator extends AppCompatActivity {
                             (calendar.get(Calendar.SECOND)<10?"0"+Integer.toString(calendar.get(Calendar.SECOND)):Integer.toString(calendar.get(Calendar.SECOND))));
 
             int cal_money = 0;
-            long tmp_sec = time_sec;  //有bugggggggggggggggggggggggggggggg
+            long tmp_sec = time_sec;
 
             if(tmp_sec <= 30*60 && tmp_sec > 0){
                 Log.d("1","1");

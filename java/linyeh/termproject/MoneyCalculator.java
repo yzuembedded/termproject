@@ -32,8 +32,10 @@ public class MoneyCalculator extends AppCompatActivity {
             public void onClick(View v) {
                 switch (state){
                     case 0:
-                        time_sec = 7198;
+                        time_sec = 16198;
                         button.setText("停止計時");
+                        txtTime.setText("00 : 00 : 00");
+                        txtMoney.setText("0 元");
                         timer.postDelayed(timerRunnable, 1000);
                         state = 1;
                         break;
@@ -61,22 +63,25 @@ public class MoneyCalculator extends AppCompatActivity {
 
             int cal_money = 0;
             long tmp_sec = time_sec;  //有bugggggggggggggggggggggggggggggg
-            if(tmp_sec > 0){
+
+            if(tmp_sec <= 30*60 && tmp_sec > 0){
+                Log.d("1","1");
                 cal_money = 0;
+            }
+            else if(tmp_sec <= 120*60 && tmp_sec > 30*60){
                 tmp_sec -= 30*60;
+                cal_money =  (int) (10 * ((int)(tmp_sec / 1800) + (int)(tmp_sec % 1800 != 0 ? 1 : 0)));
+                Log.d("2",Integer.toString((tmp_sec % 1800 != 0 ? 1 : 0)));
             }
-            if(tmp_sec > 0){
-                Log.d("10", Long.toString(tmp_sec));
-                cal_money += 10 * ((int)(tmp_sec/1800) + (int)(tmp_sec%1800==0?0:1));
-                tmp_sec -= 90*60;
-            }
-            if(tmp_sec > 0){
-                Log.d("20", Long.toString(tmp_sec));
-                cal_money += 20 * ((int)(tmp_sec/1800) + (int)(tmp_sec%1800==0?0:1));
+            else if(tmp_sec <= 240*60 && tmp_sec > 120*60){
+                Log.d("3","3");
                 tmp_sec -= 120*60;
+                cal_money = (int) (10 * 3 + 20 * ((int)(tmp_sec / 1800) + (int)(tmp_sec % 1800 != 0 ? 1 : 0)));
             }
-            if(tmp_sec > 0){
-                cal_money += 40 * ((int)(tmp_sec/1800) + (int)(tmp_sec%1800==0?0:1));
+            else{
+                Log.d("4","4");
+                tmp_sec -= 240*60;
+                cal_money = (int) (10 * 3 + 20 * 4 + 40 * ((int)(tmp_sec / 1800) + (int)(tmp_sec % 1800 != 0 ? 1 : 0)));
             }
 
             txtMoney.setText(Integer.toString(cal_money) + " 元");
